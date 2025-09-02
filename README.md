@@ -34,5 +34,3 @@ The system ingests IoT sensor data and external weather APIs, stores it in SQLit
 - Other: APScheduler (background tasks), REST APIs (BOM/weather)
 
 ---
-
-## Project Structure
