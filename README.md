@@ -22,6 +22,8 @@ The system ingests IoT sensor data and external weather APIs, stores it in SQLit
 <img width="1822" height="789" alt="image" src="https://github.com/user-attachments/assets/597ab8f4-6432-45c8-a0e9-04e927a62ab2" />
 <img width="1747" height="653" alt="image" src="https://github.com/user-attachments/assets/47c27b14-b89d-4b76-9e4f-c904a2fd7426" />
 
+## Data Flow
+<img width="820" height="569" alt="image" src="https://github.com/user-attachments/assets/f6b3c5d1-1d50-44ac-8172-c14f3264f0e9" />
 
 
 ---
