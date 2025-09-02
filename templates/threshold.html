@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+{% block title %}Set-up Threshold{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1 style="text-align: center; color: #1E3A8A;">Temperature Threshold Settings</h1>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-messages">
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  {% if user_role in ['manager', 'supervisor'] %}
+  <form action="{{ url_for('threshold_page') }}" method="POST" class="card-wide">
+    <div class="table-container">
+      <table class="threshold-table">
+        <thead>
+          <tr>
+            <th>From (°C)</th>
+            <th>To (°C)</th>
+            <th style="width: 35%;">Risk Level</th>
+            <th>Color Code</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in thresholds %}
+          <tr>
+            <td>
+              <input type="number" step="0.1" name="from_{{ loop.index0 }}"
+                     value="{{ row.from }}" required
+                     min="{% if loop.index0 > 0 %}{{ thresholds[loop.index0-1].to }}{% else %}0{% endif %}"
+                     max="{{ row.to }}">
+            </td>
+            <td>
+              <input type="number" step="0.1" name="to_{{ loop.index0 }}"
+                     value="{{ row.to }}" required
+                     min="{{ row.from }}"
+                     {% if loop.index0 < thresholds|length - 1 %}
+                       max="{{ thresholds[loop.index0+1].from }}"
+                     {% endif %}>
+            </td>
+            <td>
+              <select name="label_{{ loop.index0 }}" class="risk-level">
+                {% for level in ['Safe', 'Moderate Risk', 'High Risk', 'Very High Risk'] %}
+                  <option value="{{ level }}" {% if row.label == level %}selected{% endif %}>{{ level }}</option>
+                {% endfor %}
+              </select>
+            </td>
+            <td>
+              <div class="color-preview"
+                   style="background:
+                     {% if row.label == 'Safe' %}#66bb6a
+                     {% elif row.label == 'Moderate Risk' %}#fff176
+                     {% elif row.label == 'High Risk' %}#ffa726
+                     {% else %}#ef5350{% endif %};">
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn-save">Save Thresholds</button>
+      <a href="{{ url_for('dashboard') }}" class="btn-cancel">Cancel</a>
+    </div>
+  </form>
+
+  {% else %}
+  <!-- Read-only view for workers -->
+  <div class="table-container card-wide">
+    <table class="threshold-table">
+      <thead>
+        <tr>
+          <th>From (°C)</th>
+          <th>To (°C)</th>
+          <th style="width: 35%;">Risk Level</th>
+          <th>Color Code</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in thresholds %}
+        <tr>
+          <td>{{ row.from }}</td>
+          <td>{{ row.to }}</td>
+          <td>{{ row.label }}</td>
+          <td>
+            <div class="color-preview"
+                 style="background:
+                   {% if row.label == 'Safe' %}#66bb6a
+                   {% elif row.label == 'Moderate Risk' %}#fff176
+                   {% elif row.label == 'High Risk' %}#ffa726
+                   {% else %}#ef5350{% endif %};">
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p style="color: gray; text-align: center; margin-top: 15px;">
+    You do not have permission to edit threshold settings.
+  </p>
+  {% endif %}
+</div>
+
+<style>
+  .container {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+  }
+
+  .table-container {
+    overflow-x: auto;
+  }
+
+  .threshold-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    table-layout: fixed;
+  }
+
+  .threshold-table th, .threshold-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .threshold-table th:nth-child(3), .threshold-table td:nth-child(3) {
+    width: 35%;
+  }
+
+  .threshold-table input,
+  .threshold-table select {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  .risk-level {
+    width: 100%;
+  }
+
+  .color-preview {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+    margin: auto;
+  }
+
+  .form-actions {
+    margin-top: 30px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  .btn-save {
+    background-color: #1E3A8A;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .btn-cancel {
+    padding: 12px 24px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-decoration: none;
+    background-color: #f5f5f5;
+    color: #333;
+  }
+</style>
+{% endblock %}

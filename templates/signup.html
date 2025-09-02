@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Sign Up{% endblock %}
+
+{% block content %}
+<form method="post">
+  <h2>Sign Up</h2>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <ul class="flash">
+    {% for category, message in messages %}
+    <li class="{{ category }}">{{ message }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  {% endwith %}
+
+  <label for="firstname">First Name *</label>
+  <input type="text" id="firstname" name="firstname" value="{{ form.firstname or '' }}" required>
+
+  <label for="lastname">Last Name *</label>
+  <input type="text" id="lastname" name="lastname" value="{{ form.lastname or '' }}" required>
+
+  <label for="username">Username *</label>
+  <input type="text" id="username" name="username" value="{{ form.username or '' }}" required>
+
+  <label for="email">Email *</label>
+  <input type="email" id="email" name="email" value="{{ form.email or '' }}" required>
+
+  <label for="password">Password *</label>
+  <input type="password" id="password" name="password" required
+         pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}"
+         title="At least 8 characters, including upper-case, lower-case, and a number">
+
+  <label for="confirm">Confirm Password *</label>
+  <input type="password" id="confirm" name="confirm" required>
+
+  <label for="role">Role *</label>
+  <select id="role" name="role" required>
+    <option value="" disabled {% if not form.role %}selected{% endif %}>Select your role</option>
+    <option value="worker" {% if form.role == 'worker' %}selected{% endif %}>Worker</option>
+    <option value="manager" {% if form.role == 'manager' %}selected{% endif %}>Manager</option>
+    <option value="supervisor" {% if form.role == 'supervisor' %}selected{% endif %}>Supervisor</option>
+  </select>
+
+  <button type="submit">Sign Up</button>
+  <p class="muted">Already have an account? <a href="/signin">Sign in</a></p>
+</form>
+{% endblock %}

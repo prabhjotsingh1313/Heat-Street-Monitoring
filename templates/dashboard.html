@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Live Dashboard{% endblock %}
+
+{% block head %}
+  <meta http-equiv="refresh" content="30">
+  <style>
+    .temp-card {
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .inside-card { background-color: #e3f2fd; }
+    .outside-card { background-color: #fff8e1; }
+    .alert-box {
+      padding: 15px;
+      border-radius: 5px;
+      font-weight: bold;
+      margin: 20px 0;
+    }
+    .alert-safe { background-color: #c8e6c9; color: #2e7d32; }
+    .alert-warning { background-color: #fff9c4; color: #ff8f00; }
+    .alert-danger { background-color: #ffcdd2; color: #c62828; }
+    .gauge {
+      height: 20px;
+      background: #e0e0e0;
+      border-radius: 10px;
+      margin: 10px 0;
+      overflow: hidden;
+    }
+    .gauge-fill {
+      height: 100%;
+      transition: width 0.5s ease;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1 style="text-align: center; color: #1E3A8A;">Factory Temperature Monitoring</h1>
+
+  <!-- Alert Box -->
+  <div class="alert-box
+    {% if 'above safe threshold' in alert %}alert-danger
+    {% elif 'No critical warning' in alert %}alert-safe
+    {% else %}alert-warning{% endif %}">
+    <h3 style="margin-top: 0;">{{ alert }}</h3>
+  </div>
+
+  <div class="row">
+    <!-- Inside Temperature Card -->
+    <div class="temp-card inside-card">
+      <h2>Inside Conditions</h2>
+      {% if inside %}
+      <div class="gauge">
+        <div class="gauge-fill"
+             style="width: {{ (inside[3]/50)*100 }}%;
+                    background: {% if inside[3] > get_threshold() %}#ef5350{% else %}#66bb6a{% endif %};">
+        </div>
+      </div>
+      <p><strong>Apparent Temp:</strong> {{ inside[3] }}°C</p>
+      <p><strong>Actual Temp:</strong> {{ inside[1] }}°C</p>
+      <p><strong>Humidity:</strong> {{ inside[2] }}%</p>
+      <p><small>Last updated: {{ inside[0][11:19] }}</small></p>
+      {% else %}
+      <p>No internal data available</p>
+      {% endif %}
+    </div>
+
+    <!-- Outside Temperature Card -->
+    <div class="temp-card outside-card">
+      <h2>Outside Conditions</h2>
+      {% if outside %}
+      <div class="gauge">
+        <div class="gauge-fill"
+             style="width: {{ (outside[3]/50)*100 }}%;
+                    background: {% if outside[3] > get_threshold() %}#ef5350{% else %}#66bb6a{% endif %};">
+        </div>
+      </div>
+      <p><strong>Apparent Temp:</strong> {{ outside[3] }}°C</p>
+      <p><strong>Actual Temp:</strong> {{ outside[1] }}°C</p>
+      <p><strong>Humidity:</strong> {{ outside[2] }}%</p>
+      <p><small>Last updated: {{ outside[0][11:19] }}</small></p>
+      {% else %}
+      <p>No external data available</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="data-source">
+    <p><small>External data from Bureau of Meteorology | Internal data from factory sensors</small></p>
+  </div>
+</div>
+{% endblock %}

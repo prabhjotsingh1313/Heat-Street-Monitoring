@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>{% block title %}Heat Alert{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
+  {% block head %}{% endblock %}
+</head>
+
+<body>
+  <header class="header">
+    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="G. James logo" class="logo" />
+  </header>
+
+  {# ───── Navbar shows only when user is logged-in ───── #}
+  {% if session.get('user_id') is not none %}
+  <nav class="navbar">
+  {% if session.get('user_id') is not none %}
+    <a href="{{ url_for('threshold_page') }}">Set-up Threshold</a>
+    <a href="{{ url_for('temperature_log') }}">Temperature Log</a>
+    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+    <a href="{{ url_for('logout') }}">Logout</a>
+  {% else %}
+    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+    <a href="{{ url_for('signin') }}">Login</a>
+  {% endif %}
+</nav>
+
+  {% endif %}
+
+  {% block content %}{% endblock %}
+</body>
+</html>
